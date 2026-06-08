@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ST NARBONNE — version v1.1 — 08/06/2026 -->
+<!-- ST NARBONNE — version v1.2 — 08/06/2026 -->
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
@@ -10,6 +10,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 
   <style>
     :root {
@@ -391,6 +392,56 @@
 </head>
 <body>
 
+  <style>
+    #loginOverlay {
+      position: fixed; inset: 0; z-index: 9999;
+      display: flex; align-items: center; justify-content: center;
+      background:
+        linear-gradient(180deg, rgba(15,11,7,0.55), rgba(15,11,7,0.7)),
+        repeating-linear-gradient(135deg, #15100b 0px, #15100b 26px, #ff6a14 26px, #ff6a14 52px);
+      font-family: 'Rajdhani', sans-serif;
+    }
+    .login-card {
+      background: #fff; border-radius: 18px; padding: 36px 32px;
+      width: 320px; max-width: 90vw; text-align: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.45); border-top: 5px solid #d62828;
+    }
+    .login-logo { width: 80px; height: 80px; object-fit: contain; border-radius: 50%; margin-bottom: 12px; }
+    .login-title { margin: 0 0 4px; color: #2a1410; font-size: 1.4rem; text-transform: uppercase; letter-spacing: .05em; }
+    .login-sub { margin: 0 0 22px; color: #9a7264; font-size: .9rem; }
+    .login-card input {
+      width: 100%; box-sizing: border-box; padding: 12px 14px; margin-bottom: 12px;
+      border: 1.5px solid #f2ddd0; border-radius: 10px; font-size: 1rem; background: #fff7f1; color: #2a1410;
+    }
+    .login-card input:focus { outline: none; border-color: #f4661f; box-shadow: 0 0 0 3px rgba(244,102,31,0.15); }
+    #loginBtn {
+      width: 100%; padding: 13px; border: none; border-radius: 10px; cursor: pointer;
+      background: #d62828; color: #fff; font-weight: 700; font-size: 1rem; text-transform: uppercase; letter-spacing: .05em;
+      transition: background .2s; font-family: 'Rajdhani', sans-serif;
+    }
+    #loginBtn:hover { background: #b81e1e; }
+    .login-error { color: #d62828; font-size: .85rem; margin-top: 12px; min-height: 1em; font-weight: 600; }
+    .btn-logout {
+      background: transparent; color: rgba(255,255,255,0.9); border: 1px solid rgba(255,255,255,0.45);
+      border-radius: 10px; padding: 9px; cursor: pointer; width: 100%;
+      font-family: 'Rajdhani', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; font-size: .8rem;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.6); transition: background .2s;
+    }
+    .btn-logout:hover { background: rgba(0,0,0,0.3); }
+  </style>
+
+  <div id="loginOverlay">
+    <div class="login-card">
+      <img src="logo.png" onerror="this.style.display='none'" class="login-logo" alt="">
+      <h2 class="login-title" id="loginClub">Administration</h2>
+      <p class="login-sub">Accès réservé</p>
+      <input type="email" id="loginEmail" placeholder="Email" autocomplete="username">
+      <input type="password" id="loginPwd" placeholder="Mot de passe" autocomplete="current-password">
+      <button id="loginBtn" onclick="doLogin()">Se connecter</button>
+      <div id="loginError" class="login-error"></div>
+    </div>
+  </div>
+
   <aside class="sidebar">
     <div class="logo-area">
       <img src="logo.png" id="clubLogo"
@@ -398,7 +449,8 @@
       <div class="logo-name">🎯 <span id="clubNameDisplay"></span></div>
     </div>
     <button class="btn-create" onclick="openCreateModal()">+ Nouvelle Compétition</button>
-    <div class="sidebar-footer" style="margin-top: auto;">ST NARBONNE · v1.1 — 08/06/2026</div>
+    <button class="btn-logout" onclick="doLogout()" style="margin-top:auto;">⎋ Déconnexion</button>
+    <div class="sidebar-footer">ST NARBONNE · v1.2 — 08/06/2026</div>
   </aside>
 
   <main class="main-content">
@@ -483,6 +535,26 @@
     document.title = "🎯 " + CONFIG.clubName + " — Admin";
     document.getElementById('clubNameDisplay').textContent = CONFIG.clubName;
     document.getElementById('clubLogo').alt = "Logo " + CONFIG.clubName;
+
+    // ─── Authentification (protection de l'admin) ───
+    const auth = firebase.auth();
+    document.getElementById('loginClub').textContent = CONFIG.clubName + " · Admin";
+
+    auth.onAuthStateChanged(user => {
+      document.getElementById('loginOverlay').style.display = user ? 'none' : 'flex';
+    });
+
+    function doLogin() {
+      const email = document.getElementById('loginEmail').value.trim();
+      const pwd = document.getElementById('loginPwd').value;
+      const err = document.getElementById('loginError');
+      err.textContent = '';
+      auth.signInWithEmailAndPassword(email, pwd)
+        .catch(() => { err.textContent = "Email ou mot de passe incorrect."; });
+    }
+    function doLogout() { auth.signOut(); }
+
+    document.getElementById('loginPwd').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
 
     function openCreateModal() { document.getElementById('createModal').classList.add('active'); }
     function closeCreateModal() { document.getElementById('createModal').classList.remove('active'); }
