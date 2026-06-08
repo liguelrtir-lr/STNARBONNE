@@ -45,14 +45,20 @@
     /* ═══ SIDEBAR ═══ */
     .sidebar {
       width: 270px;
-      background: var(--sidebar-bg);
+      background:
+        linear-gradient(180deg, rgba(15,11,7,0.10), rgba(15,11,7,0.20)),
+        repeating-linear-gradient(135deg,
+          #15100b 0px,
+          #15100b 26px,
+          #ff6a14 26px,
+          #ff6a14 52px);
       padding: 32px 20px;
       display: flex;
       flex-direction: column;
       position: fixed;
       height: 100vh;
       z-index: 100;
-      border-right: 1px solid var(--sidebar-border);
+      border-right: 2px solid #f4661f;
     }
 
     .logo-area {
@@ -69,7 +75,7 @@
       height: 90px;
       object-fit: contain;
       border-radius: 50%;
-      border: 2px solid rgba(232,121,176,0.25);
+      border: 2px solid rgba(244,102,31,0.6);
       background: rgba(255,255,255,0.05);
     }
     .logo-name {
@@ -82,14 +88,15 @@
       display: flex;
       align-items: center;
       gap: 7px;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.7);
     }
-    .logo-name span { color: var(--sidebar-accent); }
+    .logo-name span { color: #ffffff; }
 
     .btn-create {
-      background: var(--sidebar-accent);
+      background: #17120c;
       color: white;
       padding: 13px 16px;
-      border: none;
+      border: 1.5px solid #f4661f;
       border-radius: var(--radius-lg);
       font-family: 'Rajdhani', sans-serif;
       font-weight: 700;
@@ -98,13 +105,14 @@
       text-transform: uppercase;
       cursor: pointer;
       transition: all 0.2s;
-      box-shadow: 0 4px 20px rgba(232,121,176,0.3);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.45);
       width: 100%;
     }
     .btn-create:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 28px rgba(232,121,176,0.45);
-      background: #f472b6;
+      box-shadow: 0 8px 28px rgba(244,102,31,0.5);
+      background: #221913;
+      border-color: #ff7d3a;
     }
 
     .sidebar-footer {
@@ -113,8 +121,9 @@
       font-size: 0.72rem;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: var(--sidebar-muted);
-      opacity: 0.7;
+      color: rgba(255,255,255,0.65);
+      text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+      opacity: 0.9;
     }
 
     /* ═══ MAIN ═══ */
@@ -387,7 +396,7 @@
            onerror="this.style.display='none'" alt="Logo du club">
       <div class="logo-name">🎯 <span id="clubNameDisplay"></span></div>
     </div>
-    <button class="btn-create" onclick="openCreateModal()">+ Nouveau Championnat</button>
+    <button class="btn-create" onclick="openCreateModal()">+ Nouvelle Compétition</button>
     <div class="sidebar-footer" style="margin-top: auto;">Admin v4.2 — Rose Sombre</div>
   </aside>
 
@@ -402,8 +411,8 @@
   <!-- MODAL CRÉATION -->
   <div class="modal" id="createModal">
     <div class="modal-content">
-      <div class="modal-title">⚙️ Nouveau Championnat</div>
-      <input type="text" id="newCompName" placeholder="Nom du Championnat">
+      <div class="modal-title">⚙️ Nouvelle Compétition</div>
+      <input type="text" id="newCompName" placeholder="Nom de la Compétition">
       <input type="text" id="newCompCode" placeholder="Code (ex: TAR_2026)">
       <select id="newCompType">
         <option value="ISSF10">ISSF 10 Mètres</option>
@@ -506,7 +515,7 @@
       grid.innerHTML = '';
       const data = snap.val();
       if (!data) {
-        grid.innerHTML = `<div class="empty-state"><div class="icon">🎯</div><p>Aucun championnat créé pour l'instant.</p></div>`;
+        grid.innerHTML = `<div class="empty-state"><div class="icon">🎯</div><p>Aucune compétition créée pour l'instant.</p></div>`;
         return;
       }
 
@@ -538,7 +547,7 @@
       });
 
       if (!hasCards) {
-        grid.innerHTML = `<div class="empty-state"><div class="icon">🎯</div><p>Aucun championnat créé pour l'instant.</p></div>`;
+        grid.innerHTML = `<div class="empty-state"><div class="icon">🎯</div><p>Aucune compétition créée pour l'instant.</p></div>`;
       }
     });
 

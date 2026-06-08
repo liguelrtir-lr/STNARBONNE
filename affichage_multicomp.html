@@ -238,7 +238,7 @@
     } else {
         db.ref(compId + '/config').on('value', snap => {
             const config = snap.val();
-            document.getElementById('compTitle').textContent = (config && config.name) ? config.name : "Championnat en cours";
+            document.getElementById('compTitle').textContent = (config && config.name) ? config.name : "Compétition en cours";
         });
 
         db.ref(compId + '/shooters').on('value', snap => {
