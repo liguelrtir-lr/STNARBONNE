@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ST NARBONNE — version v1.2 — 08/06/2026 -->
+<!-- ST NARBONNE — version v1.3 — 08/06/2026 -->
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
@@ -397,7 +397,7 @@
       position: fixed; inset: 0; z-index: 9999;
       display: flex; align-items: center; justify-content: center;
       background:
-        linear-gradient(180deg, rgba(15,11,7,0.55), rgba(15,11,7,0.7)),
+        linear-gradient(180deg, rgba(15,11,7,0.12), rgba(15,11,7,0.24)),
         repeating-linear-gradient(135deg, #15100b 0px, #15100b 26px, #ff6a14 26px, #ff6a14 52px);
       font-family: 'Rajdhani', sans-serif;
     }
@@ -450,7 +450,7 @@
     </div>
     <button class="btn-create" onclick="openCreateModal()">+ Nouvelle Compétition</button>
     <button class="btn-logout" onclick="doLogout()" style="margin-top:auto;">⎋ Déconnexion</button>
-    <div class="sidebar-footer">ST NARBONNE · v1.2 — 08/06/2026</div>
+    <div class="sidebar-footer">ST NARBONNE · v1.3 — 08/06/2026</div>
   </aside>
 
   <main class="main-content">
@@ -548,9 +548,22 @@
       const email = document.getElementById('loginEmail').value.trim();
       const pwd = document.getElementById('loginPwd').value;
       const err = document.getElementById('loginError');
-      err.textContent = '';
+      err.textContent = 'Connexion...';
       auth.signInWithEmailAndPassword(email, pwd)
-        .catch(() => { err.textContent = "Email ou mot de passe incorrect."; });
+        .catch(e => {
+          const map = {
+            'auth/invalid-email': "Adresse email mal formée.",
+            'auth/user-not-found': "Aucun compte avec cet email.",
+            'auth/wrong-password': "Mot de passe incorrect.",
+            'auth/invalid-credential': "Email ou mot de passe incorrect.",
+            'auth/missing-password': "Mot de passe manquant.",
+            'auth/operation-not-allowed': "Connexion email/mot de passe non activée dans Firebase.",
+            'auth/too-many-requests': "Trop de tentatives, réessaie dans quelques minutes.",
+            'auth/network-request-failed': "Problème de réseau.",
+            'auth/unauthorized-domain': "Domaine non autorisé (Authentication → Settings → Authorized domains)."
+          };
+          err.textContent = (map[e.code] || "Échec de connexion.") + "  [" + e.code + "]";
+        });
     }
     function doLogout() { auth.signOut(); }
 
