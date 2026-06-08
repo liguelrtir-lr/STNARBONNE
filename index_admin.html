@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>🎯 ST NARBONNE— Admin</title>
+  <title>Admin — Résultats</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Barlow:wght@300;400;500&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -383,9 +383,9 @@
 
   <aside class="sidebar">
     <div class="logo-area">
-      <img src="logo.png"
-           onerror="this.style.display='none'" alt="Logo ST NARBONNE">
-      <div class="logo-name">🎯 <span>ST</span> NARBONNE</div>
+      <img src="logo.png" id="clubLogo"
+           onerror="this.style.display='none'" alt="Logo du club">
+      <div class="logo-name">🎯 <span id="clubNameDisplay"></span></div>
     </div>
     <button class="btn-create" onclick="openCreateModal()">+ Nouveau Championnat</button>
     <div class="sidebar-footer" style="margin-top: auto;">Admin v4.2 — Rose Sombre</div>
@@ -431,18 +431,43 @@
   </div>
 
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyAvfMRtRrhh_e-27xHlwIx9c5DIdUQm6HM",
-      authDomain: "resultats-tir-ligue-lr.firebaseapp.com",
-      databaseURL: "https://resultats-tir-ligue-lr-default-rtdb.europe-west1.firebasedatabase.app",
-      projectId: "resultats-tir-ligue-lr",
-      storageBucket: "resultats-tir-ligue-lr.firebasestorage.app",
-      appId: "1:468808300974:web:563a14cc4477c10b28303f"
-    };
+    // ╔══════════════════════════════════════════════════════════════╗
+    // ║  CONFIGURATION DU CLUB                                         ║
+    // ║  >>> C'EST LE SEUL BLOC À MODIFIER POUR CHAQUE NOUVEAU CLUB <<<║
+    // ╚══════════════════════════════════════════════════════════════╝
+    const CONFIG = {
 
-    firebase.initializeApp(firebaseConfig);
+      // 1) Nom du club (s'affiche dans le titre et la barre latérale)
+      clubName: "ST NARBONNE",
+
+      // 2) Adresse du site sur GitHub Pages — sert à générer les QR codes.
+      //    Format : https://VOTRE-COMPTE.github.io/NOM-DU-DEPOT
+      //    (sans / à la fin)
+      githubBase: "https://liguelrtir-lr.github.io/resultats-tir",
+
+      // 3) Configuration Firebase du club
+      //    Console Firebase > Paramètres du projet > Vos applications
+      firebase: {
+        apiKey: "AIzaSyAvfMRtRrhh_e-27xHlwIx9c5DIdUQm6HM",
+        authDomain: "resultats-tir-ligue-lr.firebaseapp.com",
+        databaseURL: "https://resultats-tir-ligue-lr-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "resultats-tir-ligue-lr",
+        storageBucket: "resultats-tir-ligue-lr.firebasestorage.app",
+        appId: "1:468808300974:web:563a14cc4477c10b28303f"
+      }
+
+      // 4) Le logo : remplacer le fichier "logo.png" dans le dépôt.
+    };
+    // ─── Fin de la configuration — ne rien modifier en dessous ───────
+
+    firebase.initializeApp(CONFIG.firebase);
     const database = firebase.database();
-    const GITHUB_BASE = "https://liguelrtir-lr.github.io/resultats-tir";
+    const GITHUB_BASE = CONFIG.githubBase.replace(/\/+$/, '');
+
+    // Applique le nom du club au titre et à la barre latérale
+    document.title = "🎯 " + CONFIG.clubName + " — Admin";
+    document.getElementById('clubNameDisplay').textContent = CONFIG.clubName;
+    document.getElementById('clubLogo').alt = "Logo " + CONFIG.clubName;
 
     function openCreateModal() { document.getElementById('createModal').classList.add('active'); }
     function closeCreateModal() { document.getElementById('createModal').classList.remove('active'); }
@@ -452,6 +477,7 @@
       const code = document.getElementById('newCompCode').value.trim().toUpperCase().replace(/\s/g, '_');
       const type = document.getElementById('newCompType').value;
       if (!name || !code) return alert("Remplis tout !");
+      if (/[.#$\[\]\/]/.test(code)) return alert("Le code ne doit pas contenir : . # $ [ ] /");
       database.ref(code + '/config').set({ name, type }).then(() => {
         closeCreateModal();
         document.getElementById('newCompName').value = '';
@@ -504,7 +530,7 @@
               <a href="saisie_multicomp.html?comp=${code}" class="btn-act btn-saisie">⌨️ Saisie</a>
               <button onclick="openQr('${code}')" class="btn-act btn-qr">📱 QR Code</button>
               <a href="affichage_multicomp.html?comp=${code}" target="_blank" class="btn-act btn-tv">📺 Affichage Live</a>
-              <button onclick="deleteComp('${code}', '${config.name.replace(/'/g,"\\'")}'')" class="btn-act btn-del">🗑️ Supprimer</button>
+              <button onclick="deleteComp('${code}', '${config.name.replace(/'/g,"\\'")}')" class="btn-act btn-del">🗑️ Supprimer</button>
             </div>
           `;
           grid.appendChild(card);
