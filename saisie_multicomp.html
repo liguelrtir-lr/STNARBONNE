@@ -2,30 +2,30 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Saisie Officielle Ligue LR — v1.36</title>
+    <title>Saisie des Résultats</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Barlow:wght@300;400;500&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
     <style>
         :root {
-            --bg: #0d1117;
-            --surface: #161b22;
-            --surface2: #1c2330;
-            --border: #2a3441;
-            --border-active: #3d8b37;
-            --accent: #3fb950;
-            --accent2: #d4a017;
-            --accent-dim: rgba(63,185,80,0.12);
-            --text: #e6edf3;
-            --text-muted: #7d8590;
-            --text-dim: #4d5a68;
-            --blue: #388bfd;
-            --blue-dim: rgba(56,139,253,0.15);
-            --red: #f85149;
-            --red-dim: rgba(248,81,73,0.12);
-            --warning: #e3b341;
-            --warning-dim: rgba(227,179,65,0.12);
+            --bg: #fff6f0;            /* crème chaud */
+            --surface: #ffffff;
+            --surface2: #fff0e6;      /* champ clair chaud */
+            --border: #f2ddd0;
+            --border-active: #f4661f;
+            --accent: #d62828;        /* rouge Narbonne */
+            --accent2: #f4661f;       /* orange */
+            --accent-dim: rgba(214,40,40,0.10);
+            --text: #2b1410;          /* presque noir, chaud */
+            --text-muted: #9a6f5f;
+            --text-dim: #c2a395;
+            --blue: #f4661f;          /* "bleu" repris en orange (boutons, scores) */
+            --blue-dim: rgba(244,102,31,0.12);
+            --red: #d62828;
+            --red-dim: rgba(214,40,40,0.12);
+            --warning: #f4a261;
+            --warning-dim: rgba(244,162,97,0.14);
             --radius: 8px;
             --radius-lg: 12px;
         }
@@ -40,9 +40,9 @@
             padding: 24px 16px;
             min-height: 100vh;
             background-image:
-                radial-gradient(ellipse 80% 50% at 50% -10%, rgba(63,185,80,0.07) 0%, transparent 60%),
-                repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,0.015) 40px),
-                repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,0.015) 40px);
+                radial-gradient(ellipse 80% 50% at 50% -10%, rgba(244,102,31,0.10) 0%, transparent 60%),
+                repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(120,60,30,0.035) 40px),
+                repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(120,60,30,0.035) 40px);
         }
 
         .container {
@@ -74,7 +74,7 @@
         .header-logo {
             width: 44px; height: 44px;
             background: var(--accent-dim);
-            border: 1px solid rgba(63,185,80,0.3);
+            border: 1px solid rgba(214,40,40,0.3);
             border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
             font-size: 1.3rem;
@@ -185,7 +185,7 @@
         }
         select#typeSelector {
             background: var(--accent);
-            color: #0d1117;
+            color: #fff;
             font-family: 'Rajdhani', sans-serif;
             font-weight: 700;
             font-size: 0.95rem;
@@ -228,7 +228,7 @@
         }
         input[type="text"]:focus, input[type="number"]:focus, select:focus, textarea:focus {
             border-color: var(--blue);
-            box-shadow: 0 0 0 3px rgba(56,139,253,0.1);
+            box-shadow: 0 0 0 3px rgba(244,102,31,0.1);
         }
         select option { background: var(--surface2); }
         textarea {
@@ -239,8 +239,8 @@
 
         /* IMPORT HINT */
         .import-hint {
-            background: rgba(63,185,80,0.06);
-            border: 1px solid rgba(63,185,80,0.15);
+            background: rgba(214,40,40,0.06);
+            border: 1px solid rgba(214,40,40,0.15);
             border-radius: var(--radius);
             padding: 12px 14px;
             margin-bottom: 14px;
@@ -267,11 +267,11 @@
             display: flex; align-items: center; justify-content: center; gap: 8px;
         }
         .btn-primary { background: var(--blue); color: #fff; }
-        .btn-primary:hover { background: #58a6ff; box-shadow: 0 0 20px rgba(56,139,253,0.25); }
-        .btn-import-run { background: var(--accent); color: #0d1117; }
-        .btn-import-run:hover { background: #56d364; box-shadow: 0 0 20px rgba(63,185,80,0.25); }
-        .btn-warning { background: var(--warning); color: #0d1117; display: none; }
-        .btn-warning:hover { background: #f0c040; }
+        .btn-primary:hover { background: #ff7d3a; box-shadow: 0 0 20px rgba(244,102,31,0.25); }
+        .btn-import-run { background: var(--accent); color: #fff; }
+        .btn-import-run:hover { background: #b81e1e; box-shadow: 0 0 20px rgba(214,40,40,0.25); }
+        .btn-warning { background: var(--warning); color: #3a1c10; display: none; }
+        .btn-warning:hover { background: #ef9344; }
         .btn-secondary { background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border); display: none; font-size: 0.85rem; padding: 10px; }
         .btn-secondary:hover { color: var(--text); border-color: var(--text-muted); }
 
@@ -292,7 +292,7 @@
             width: 100%;
             transition: border-color 0.2s;
         }
-        input#search:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(56,139,253,0.1); outline: none; }
+        input#search:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(244,102,31,0.1); outline: none; }
         input#search::placeholder { color: var(--text-dim); }
 
         /* SHOOTER LIST */
@@ -363,7 +363,7 @@
             color: var(--blue);
             border-radius: var(--radius);
         }
-        .score-input:focus { outline: none; box-shadow: 0 0 0 2px rgba(56,139,253,0.25); }
+        .score-input:focus { outline: none; box-shadow: 0 0 0 2px rgba(244,102,31,0.25); }
         .btn-action {
             border: none;
             padding: 8px 10px;
@@ -374,7 +374,7 @@
             background: transparent;
         }
         .btn-edit { color: var(--blue); background: var(--blue-dim); }
-        .btn-edit:hover { background: rgba(56,139,253,0.25); }
+        .btn-edit:hover { background: rgba(244,102,31,0.25); }
         .btn-del { color: var(--red); background: var(--red-dim); }
         .btn-del:hover { background: rgba(248,81,73,0.25); }
 
@@ -388,7 +388,7 @@
             z-index: 100;
             width: 100%;
             border-radius: 0 0 var(--radius) var(--radius);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            box-shadow: 0 8px 24px rgba(120,50,20,0.18);
             overflow: hidden;
         }
         .suggestion-item {
@@ -434,7 +434,7 @@
             <div class="header-logo">🎯</div>
             <div>
                 <h1 class="header-title">Saisie des Résultats</h1>
-                <div class="header-sub">Ligue Languedoc-Roussillon</div>
+                <div class="header-sub" id="clubSub">Ligue Languedoc-Roussillon</div>
             </div>
         </div>
         <div class="header-actions">
@@ -560,17 +560,35 @@
         MLAIC: { disc: ["601 - Miquelet Origine", "701 - Miquelet Réplique", "602 - Maximilien Origine", "702 - Maximilien Réplique", "603 - Minié Origine", "703 - Minié Réplique", "604 - Whitworth Origine", "704 - Whitworth Réplique", "605 - Cominazzo Origine", "705 - Cominazzo Réplique", "606 - Kuchenreuter Origine", "706 - Kuchenreuter Réplique", "607 - Colt", "712 - Mariette", "615 - Vetterli Origine", "715 - Vetterli Réplique", "637 - Lamarmora Origine", "737 - Lamarmora Réplique"], cats: ["Senior", "Junior"] }
     };
 
-    const firebaseConfig = {
+    // ╔══════════════════════════════════════════════════════════════╗
+    // ║  CONFIGURATION DU CLUB                                         ║
+    // ║  >>> C'EST LE SEUL BLOC À MODIFIER POUR CHAQUE NOUVEAU CLUB <<<║
+    // ╚══════════════════════════════════════════════════════════════╝
+    const CONFIG = {
+
+      // 1) Nom du club (titre de l'onglet + sous-titre de l'en-tête)
+      clubName: "ST NARBONNE",
+
+      // 2) Configuration Firebase du club
+      //    Console Firebase > Paramètres du projet > Vos applications
+      firebase: {
         apiKey: "AIzaSyAvfMRtRrhh_e-27xHlwIx9c5DIdUQm6HM",
         authDomain: "resultats-tir-ligue-lr.firebaseapp.com",
         databaseURL: "https://resultats-tir-ligue-lr-default-rtdb.europe-west1.firebasedatabase.app",
         projectId: "resultats-tir-ligue-lr",
         storageBucket: "resultats-tir-ligue-lr.firebasestorage.app",
         appId: "1:468808300974:web:563a14cc4477c10b28303f"
+      }
     };
-    firebase.initializeApp(firebaseConfig);
+    // ─── Fin de la configuration — ne rien modifier en dessous ───────
+
+    firebase.initializeApp(CONFIG.firebase);
     const db = firebase.database();
     const compId = new URLSearchParams(window.location.search).get('comp');
+
+    // Applique le nom du club au titre et au sous-titre
+    document.title = "Saisie — " + CONFIG.clubName;
+    document.getElementById('clubSub').textContent = CONFIG.clubName;
 
     let shootersData = [];
     let archiveTireurs = [];
@@ -749,7 +767,7 @@
                     <div class="shooter-name">${s.lastName} <span style="font-weight:400; color:var(--text-muted)">${s.firstName}</span></div>
                     <div class="shooter-detail">
                         <span class="tag">${s.discipline}</span>
-                        <span class="tag" style="border-color:rgba(63,185,80,0.2); color:var(--accent)">${s.category}</span>
+                        <span class="tag" style="border-color:rgba(214,40,40,0.2); color:var(--accent)">${s.category}</span>
                         <span class="tag">${s.club}</span>
                     </div>
                 </div>

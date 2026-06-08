@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🏆 Ligue LR — Palmarès en Direct</title>
+    <title>Palmarès en Direct</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
     <style>
         :root {
-            --primary-bordeaux: #4a2c40; 
-            --bg-pastel: #f8fafc;
-            --text-dark: #0f172a;
-            --text-light: #64748b;
+            --primary-bordeaux: #c1271d; /* rouge Narbonne (scores + accents) */
+            --bg-pastel: #fff7f1;        /* crème chaud */
+            --text-dark: #2a1410;        /* presque noir, chaud */
+            --text-light: #9a7264;       /* gris chaud */
         }
 
         body {
@@ -31,12 +31,12 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: var(--primary-bordeaux);
+            background: linear-gradient(120deg, #c1271d 0%, #e8581f 100%);
             color: white;
             padding: 20px 30px;
             border-radius: 20px;
             margin-bottom: 30px;
-            box-shadow: 0 10px 25px rgba(74, 44, 64, 0.15);
+            box-shadow: 0 10px 25px rgba(193, 39, 29, 0.22);
             position: sticky;
             top: 10px;
             z-index: 100;
@@ -71,7 +71,7 @@
         .comp-name {
             margin-top: 5px;
             font-size: 1.1rem;
-            color: #ffb8d9;
+            color: #ffdcc6;
             font-weight: 600;
             text-transform: uppercase;
         }
@@ -90,7 +90,7 @@
         }
 
         .discipline-title {
-            color: #c0442a;
+            color: #c1271d;
             border-bottom: none;
             padding: 15px 10px;
             margin-top: 0;
@@ -114,15 +114,15 @@
 
         /* === SEUL CHANGEMENT : couleur rose/bordeaux sur les bandeaux catégorie === */
         .category-title {
-            background: #f3e6f0;
-            color: #6d1f4e;
+            background: #ffe9d8;
+            color: #b3401a;
             padding: 8px 16px;
             border-radius: 10px;
             font-weight: 700;
             font-size: 1.1rem;
             margin-bottom: 12px;
             width: fit-content;
-            border-left: 4px solid #9b3272;
+            border-left: 4px solid #f4661f;
         }
 
         table {
@@ -199,18 +199,39 @@
 </div>
 
 <script>
-    const firebaseConfig = {
+    // ╔══════════════════════════════════════════════════════════════╗
+    // ║  CONFIGURATION DU CLUB                                         ║
+    // ║  >>> C'EST LE SEUL BLOC À MODIFIER POUR CHAQUE NOUVEAU CLUB <<<║
+    // ╚══════════════════════════════════════════════════════════════╝
+    const CONFIG = {
+
+      // 1) Nom du club (titre de l'onglet + texte des logos)
+      clubName: "ST NARBONNE",
+
+      // 2) Configuration Firebase du club
+      //    Console Firebase > Paramètres du projet > Vos applications
+      firebase: {
         apiKey: "AIzaSyAvfMRtRrhh_e-27xHlwIx9c5DIdUQm6HM",
         authDomain: "resultats-tir-ligue-lr.firebaseapp.com",
         databaseURL: "https://resultats-tir-ligue-lr-default-rtdb.europe-west1.firebasedatabase.app",
         projectId: "resultats-tir-ligue-lr",
         storageBucket: "resultats-tir-ligue-lr.firebasestorage.app",
         appId: "1:468808300974:web:563a14cc4477c10b28303f"
-    };
+      }
 
-    firebase.initializeApp(firebaseConfig);
+      // 3) Le logo : remplacer le fichier "logo.png" dans le dépôt.
+    };
+    // ─── Fin de la configuration — ne rien modifier en dessous ───────
+
+    firebase.initializeApp(CONFIG.firebase);
     const db = firebase.database();
     const compId = new URLSearchParams(window.location.search).get('comp');
+
+    // Applique le nom du club au titre de l'onglet et aux logos
+    document.title = "🏆 " + CONFIG.clubName + " — Palmarès en Direct";
+    document.querySelectorAll('.header-logo').forEach(img => {
+        img.alt = "Logo " + CONFIG.clubName;
+    });
 
     if (!compId) {
         document.getElementById('resultsContainer').innerHTML = `<div class="no-data" style="color:red; font-weight:bold;">⚠️ Erreur : Aucune compétition spécifiée.</div>`;
