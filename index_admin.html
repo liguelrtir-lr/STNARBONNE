@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- ST NARBONNE — version v1.1 — 08/06/2026 -->
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
@@ -397,7 +398,7 @@
       <div class="logo-name">🎯 <span id="clubNameDisplay"></span></div>
     </div>
     <button class="btn-create" onclick="openCreateModal()">+ Nouvelle Compétition</button>
-    <div class="sidebar-footer" style="margin-top: auto;">Admin v4.2 — Rose Sombre</div>
+    <div class="sidebar-footer" style="margin-top: auto;">ST NARBONNE · v1.1 — 08/06/2026</div>
   </aside>
 
   <main class="main-content">
@@ -449,6 +450,10 @@
       // 1) Nom du club (s'affiche dans le titre et la barre latérale)
       clubName: "ST NARBONNE",
 
+      // 1bis) Identifiant technique du club = son dossier dans Firebase.
+      //       SANS espaces ni accents. Doit être différent pour chaque club.
+      clubKey: "STNARBONNE",
+
       // 2) Adresse du site sur GitHub Pages — sert à générer les QR codes.
       //    Format : https://VOTRE-COMPTE.github.io/NOM-DU-DEPOT
       //    (sans / à la fin)
@@ -471,6 +476,7 @@
 
     firebase.initializeApp(CONFIG.firebase);
     const database = firebase.database();
+    const CLUB_PATH = 'clubs/' + CONFIG.clubKey;   // dossier propre au club
     const GITHUB_BASE = CONFIG.githubBase.replace(/\/+$/, '');
 
     // Applique le nom du club au titre et à la barre latérale
@@ -487,7 +493,7 @@
       const type = document.getElementById('newCompType').value;
       if (!name || !code) return alert("Remplis tout !");
       if (/[.#$\[\]\/]/.test(code)) return alert("Le code ne doit pas contenir : . # $ [ ] /");
-      database.ref(code + '/config').set({ name, type }).then(() => {
+      database.ref(CLUB_PATH + '/' + code + '/config').set({ name, type }).then(() => {
         closeCreateModal();
         document.getElementById('newCompName').value = '';
         document.getElementById('newCompCode').value = '';
@@ -495,7 +501,7 @@
     }
 
     function deleteComp(code, name) {
-      if (confirm(`Supprimer définitivement "${name}" ?`)) database.ref(code).remove();
+      if (confirm(`Supprimer définitivement "${name}" ?`)) database.ref(CLUB_PATH + '/' + code).remove();
     }
 
     function openQr(code) {
@@ -510,7 +516,7 @@
 
     function closeQrModal() { document.getElementById('qrModal').classList.remove('active'); }
 
-    database.ref().on('value', snap => {
+    database.ref(CLUB_PATH).on('value', snap => {
       const grid = document.getElementById('compGrid');
       grid.innerHTML = '';
       const data = snap.val();

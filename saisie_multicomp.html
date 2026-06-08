@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- ST NARBONNE — version v1.1 — 08/06/2026 -->
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -438,7 +439,7 @@
             </div>
         </div>
         <div class="header-actions">
-            <span class="version-tag">v1.36</span>
+            <span class="version-tag">v1.1</span>
             <button type="button" id="btnToggleImport" class="btn-toggle-import">
                 <span>🪄</span> Import Excel
             </button>
@@ -569,6 +570,10 @@
       // 1) Nom du club (titre de l'onglet + sous-titre de l'en-tête)
       clubName: "ST NARBONNE",
 
+      // 1bis) Identifiant technique du club = son dossier dans Firebase.
+      //       SANS espaces ni accents. Doit être différent pour chaque club.
+      clubKey: "STNARBONNE",
+
       // 2) Configuration Firebase du club
       //    Console Firebase > Paramètres du projet > Vos applications
       firebase: {
@@ -584,6 +589,7 @@
 
     firebase.initializeApp(CONFIG.firebase);
     const db = firebase.database();
+    const CLUB_PATH = 'clubs/' + CONFIG.clubKey;   // dossier propre au club
     const compId = new URLSearchParams(window.location.search).get('comp');
 
     // Applique le nom du club au titre et au sous-titre
@@ -595,7 +601,7 @@
 
     db.ref('Ligue_Tireurs_Archive').on('value', snap => { archiveTireurs = Object.values(snap.val() || {}); });
     if (compId) {
-        db.ref(compId + '/shooters').on('value', snap => {
+        db.ref(CLUB_PATH + '/' + compId + '/shooters').on('value', snap => {
             const data = snap.val() || {};
             shootersData = Object.keys(data).map(key => ({ id: key, ...data[key] }));
             renderList(shootersData);
@@ -656,7 +662,7 @@
                         doublons++;
                     } else {
                         const s = { lastName: nom, firstName: prenom, club: club, discipline: fullDisc, category: cat, score: 0 };
-                        db.ref(compId + '/shooters').push(s);
+                        db.ref(CLUB_PATH + '/' + compId + '/shooters').push(s);
                         const key = nom.replace(/[^a-zA-Z]/g, "") + "_" + prenom.replace(/[^a-zA-Z]/g, "");
                         db.ref('Ligue_Tireurs_Archive/' + key).update({ lastName: nom, firstName: prenom, club: club });
                         count++;
@@ -690,7 +696,7 @@
         }
 
         const s = { lastName: nom, firstName: prenom, club: club, discipline: disc, category: cat, score: 0 };
-        db.ref(compId + '/shooters').push(s);
+        db.ref(CLUB_PATH + '/' + compId + '/shooters').push(s);
         const key = nom.replace(/[^a-zA-Z]/g, "") + "_" + prenom.replace(/[^a-zA-Z]/g, "");
         db.ref('Ligue_Tireurs_Archive/' + key).set({ lastName: nom, firstName: prenom, club: club });
         resetForm();
@@ -733,12 +739,12 @@
             discipline: document.getElementById('newDiscipline').value,
             category: document.getElementById('newCategorie').value
         };
-        db.ref(compId + '/shooters/' + id).update(updates);
+        db.ref(CLUB_PATH + '/' + compId + '/shooters/' + id).update(updates);
         resetForm();
     }
 
     function deleteShooter(id) {
-        if(confirm("Supprimer ce tireur ?")) { db.ref(compId + '/shooters/' + id).remove(); }
+        if(confirm("Supprimer ce tireur ?")) { db.ref(CLUB_PATH + '/' + compId + '/shooters/' + id).remove(); }
     }
 
     function resetForm() {
@@ -780,7 +786,7 @@
         });
     }
 
-    function saveScore(id, val) { db.ref(compId + '/shooters/' + id).update({ score: parseFloat(val) || 0 }); }
+    function saveScore(id, val) { db.ref(CLUB_PATH + '/' + compId + '/shooters/' + id).update({ score: parseFloat(val) || 0 }); }
 
     function chercherDansArchive(val) {
         const box = document.getElementById('suggestions');

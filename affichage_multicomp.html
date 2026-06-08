@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- ST NARBONNE — version v1.1 — 08/06/2026 -->
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -187,7 +188,7 @@
         <img src="logo.png" alt="Logo Ligue LR" class="header-logo">
         <div class="header-center">
             <h1>🏆 PALMARÈS PROVISOIRE</h1>
-            <div class="version-tag">v1.2</div>
+            <div class="version-tag">v1.1</div>
             <div id="compTitle" class="comp-name">Chargement...</div>
         </div>
         <img src="logo.png" alt="Logo Ligue LR" class="header-logo">
@@ -208,6 +209,10 @@
       // 1) Nom du club (titre de l'onglet + texte des logos)
       clubName: "ST NARBONNE",
 
+      // 1bis) Identifiant technique du club = son dossier dans Firebase.
+      //       SANS espaces ni accents. Doit être différent pour chaque club.
+      clubKey: "STNARBONNE",
+
       // 2) Configuration Firebase du club
       //    Console Firebase > Paramètres du projet > Vos applications
       firebase: {
@@ -225,6 +230,7 @@
 
     firebase.initializeApp(CONFIG.firebase);
     const db = firebase.database();
+    const CLUB_PATH = 'clubs/' + CONFIG.clubKey;   // dossier propre au club
     const compId = new URLSearchParams(window.location.search).get('comp');
 
     // Applique le nom du club au titre de l'onglet et aux logos
@@ -236,12 +242,12 @@
     if (!compId) {
         document.getElementById('resultsContainer').innerHTML = `<div class="no-data" style="color:red; font-weight:bold;">⚠️ Erreur : Aucune compétition spécifiée.</div>`;
     } else {
-        db.ref(compId + '/config').on('value', snap => {
+        db.ref(CLUB_PATH + '/' + compId + '/config').on('value', snap => {
             const config = snap.val();
             document.getElementById('compTitle').textContent = (config && config.name) ? config.name : "Compétition en cours";
         });
 
-        db.ref(compId + '/shooters').on('value', snap => {
+        db.ref(CLUB_PATH + '/' + compId + '/shooters').on('value', snap => {
             const data = snap.val() || {};
             const shooters = Object.keys(data).map(key => data[key]);
 
